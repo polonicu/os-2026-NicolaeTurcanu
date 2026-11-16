@@ -7,3 +7,4 @@ Nicolae Turcanu, FAF-242
 - `lab4/`: Lab 4 report, `sleep.c`, `args.c`, `args_linux.c`, `Makefile`
 - `lab5/`: Lab 5 report (file systems on Linux)
 - `lab6/`: Lab 6 report, `mystat.c`, `find.c`, `Makefile`
+- `lab7/`: Lab 7 report, `run.c`, `zombie.c`, `redirect.c`, `pipeline.c`, `pipeline3.c`
