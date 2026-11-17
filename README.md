@@ -8,3 +8,4 @@ Nicolae Turcanu, FAF-242
 - `lab5/`: Lab 5 report (file systems on Linux)
 - `lab6/`: Lab 6 report, `mystat.c`, `find.c`, `Makefile`
 - `lab7/`: Lab 7 report, `run.c`, `zombie.c`, `redirect.c`, `pipeline.c`, `pipeline3.c`
+- `lab8/`: Lab 8 report, `run.c`, `pingpong.c`, `primes.c`, `Makefile`
