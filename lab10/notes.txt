@@ -1,0 +1,30 @@
+Lab 10 - Add Your Own System Call: trace
+Nicolae Turcanu, FAF-242. The full report is Lab10_NicolaeTurcanu_FAF-242.docx.
+
+Check 1:  trace 32 grep hello README  ->  "3 trace: unknown sys call 23" / "trace: failed"
+Check 2:  trace 32 grep hello README  ->  read -> 1023, 965, 453, 0   (1023+965+453 = 2441 = size of README)
+3.1 mask 2147483647: trace, exec -> 3, open -> 3, read x4, close -> 0  (same as the sheet)
+3.2 mask 2 usertests forkforkfork: fork lines from pids 8..13, fork -> -1 when the table is full, ALL TESTS PASSED
+3.3 mask 65536 echo hi: "hi5: syscall write -> 2", new line, "5: syscall write -> 1"
+
+Observe
+
+1. In trace 32 grep hello README why do you see only read, and not open or close?
+   32 = 2^5 has only bit 5 on, and 5 is SYS_read. syscall() prints a call only if
+   (p->trace_mask >> num) & 1; for open (15) and close (21) that bit of 32 is 0, so they run
+   but are not printed.
+
+2. In forkforkfork, three different pids print lines. Which line of code from Part 2 makes that possible?
+   np->trace_mask = p->trace_mask;   in fork() (kernel/proc.c). The mask is set once, by trace,
+   and every child created by fork copies its parent's mask, so the children of the children
+   are traced too.
+
+3. In trace 65536 echo hi the trace line is printed between "hi" and the new line. Why?
+   echo calls write twice: write(1, "hi", 2) and then write(1, "\n", 1). The kernel prints the
+   trace line right after each call returns, so the order is: "hi", "write -> 2", "\n", "write -> 1".
+
+4. Which mask traces both open (15) and close (21), and nothing else?
+   2^15 + 2^21 = 32768 + 2097152 = 2129920   ((1 << 15) | (1 << 21)).
+   Checked: trace 2129920 grep hello README prints only "open -> 3" and "close -> 0".
+
+Optional: sysinfo (syscall 24) added - free memory and number of processes; see sysinfo.c.
