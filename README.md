@@ -5,6 +5,8 @@ Nicolae Turcanu, FAF-242
 Each lab folder has the report (`LabN_NicolaeTurcanu_FAF-242.docx`), the code, and the file with the
 "Observe" answers that the lab sheet asks for (`report.md`, `notes.md` or `notes.txt`).
 
+- `xv6-riscv/`: my whole xv6 tree after Lab 13 (Labs 4, 6, 8, 10 and 13 in one tree): `make qemu`, then
+  e.g. `semtest`, `mix lock`, `trace 32 grep hello README`, `pingpong`, `primes`, `sysinfo`
 - `Lab1-2/`: report for Laboratory Work 1 & 2
 - `lab3/`: Lab 3 report, `report.sh`, `oneliners.sh`
 - `lab4/`: Lab 4 report, `sleep.c`, `args.c`, `args_linux.c`, `Makefile`
@@ -18,4 +20,5 @@ Each lab folder has the report (`LabN_NicolaeTurcanu_FAF-242.docx`), the code, a
 - `lab12/`: Lab 12 report, `prodcons.c`, `condvar.c`, `readers.c`, `deadlock.c` (fixed), `report.md`
 - `lab13/`: Lab 13 report (kernel semaphores in xv6), `sem.c`, `semtest.c`, `mix.c`, `trydown.c`, `lab13.patch`, `notes.txt`
 
-The `.patch` files are the changes made to the xv6 kernel (`git apply` on top of the previous lab).
+The `.patch` files are the changes made to the xv6 kernel (`git apply` on top of the previous lab);
+`xv6-riscv/` already contains all of them.
