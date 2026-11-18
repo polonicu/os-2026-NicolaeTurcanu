@@ -1,0 +1,43 @@
+Lab 13 - Semaphores in Your Own Kernel
+Nicolae Turcanu, FAF-242. The full report is Lab13_NicolaeTurcanu_FAF-242.docx.
+
+Numbers: sem_init 24, sem_down 25, sem_up 26 (23 = trace from Lab 10; sysinfo from Lab 10 moved
+from 24 to 28; optional sem_trydown = 27).
+
+Check 1 (user side only):
+  3 semtest: unknown sys call 24
+  4 semtest: unknown sys call 25
+  child: I ran after the parent
+  parent: done, I let the child go
+  ... then the error lines and ping/pong mixed ("p i pnongg  11").
+Check 2 (with kernel/sem.c), twice: parent, child, ping 1 / pong 1 / ... / pong 3, semtest: OK.
+mix: letters mixed (AbAbAb...), different each run. mix lock: 5 whole A lines, then 5 whole b lines.
+
+Observe
+
+1. Without the lock, why do the letters mix? (How many system calls does one line cost?)
+   One line costs 31 system calls: 30 write() of one letter plus one for "\n". The two processes run
+   at the same time on different CPUs (make qemu uses 3), and every write is a separate call, so the
+   console gets the letters in whatever order the two processes make their calls.
+
+2. With the lock every line is whole. Which two lines of mix.c make one line a critical section?
+   sem_down(3); before the loop of write() calls and sem_up(3); after it, in lines()
+   (with sem_init(3, 1), so semaphore 3 is a lock).
+
+3. In sem_down the test is "while (s->value == 0)", not "if". Why can a process wake up and still find 0?
+   wakeup(s) wakes EVERY process sleeping on s, but sem_up added only 1: the first one to get the
+   spinlock back takes the unit, the others find 0 again. Also a process that was not sleeping can
+   call sem_down and take the unit between the wakeup and the moment the woken process gets the lock
+   back, and kill also wakes a sleeping process. With "if" the value would go below 0.
+
+4. sem_down calls release(&s->lock) BEFORE sleep(). What would go wrong if it slept holding the spinlock?
+   The kernel forbids it: sched() requires that the CPU holds exactly one lock (p->lock); with s->lock
+   too it panics. Tested: a kernel with sem_down sleeping while holding the lock printed
+   "panic: sched locks" at the first semtest. And even if it were allowed it would deadlock: sem_up
+   needs acquire(&s->lock) to add 1 and call wakeup, so it would spin forever on the lock held by the
+   sleeper, and the sleeper would wait for a wakeup that never comes.
+
+Optional: sem_trydown (27) - returns 0 if it took a unit, -1 at once if the value is 0:
+  value 1: sem_trydown -> 0 (took the unit)
+  value 0: sem_trydown -> -1 (no unit, did not sleep)
+  after sem_up: sem_trydown -> 0
